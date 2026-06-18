@@ -380,8 +380,8 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 
 const CuteKitten: React.FC<{ mood: 'happy' | 'sad' | 'neutral' }> = ({ mood }) => {
   return (
-    <div className="flex flex-col items-center my-4 animate-bounce">
-      <svg viewBox="0 0 100 100" className="w-24 h-24 drop-shadow-md">
+    <div className="flex flex-col items-center my-2 animate-bounce">
+      <svg viewBox="0 0 100 100" className="w-20 h-20 drop-shadow-md">
         {/* Uszka */}
         <polygon points="20,40 8,12 38,28" fill="#fbcfe8" stroke="#f472b6" strokeWidth="2" />
         <polygon points="80,40 92,12 62,28" fill="#fbcfe8" stroke="#f472b6" strokeWidth="2" />
@@ -471,6 +471,9 @@ export default function App() {
       body {
         font-family: 'Inter', 'Quicksand', sans-serif !important;
       }
+      html {
+        scroll-behavior: smooth;
+      }
     `;
     document.head.appendChild(styleOverride);
 
@@ -531,6 +534,14 @@ export default function App() {
     setAnswers(prev => ({ ...prev, [currentQuestionIndex]: option }));
     setIsAnswered(true);
     setRandomFeedbackIndex(Math.floor(Math.random() * 6));
+    
+    // Scroll do feedback
+    setTimeout(() => {
+      const feedbackElement = document.querySelector('[data-feedback]');
+      if (feedbackElement) {
+        feedbackElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }, 100);
   };
 
   const nextQuestion = () => {
@@ -928,7 +939,7 @@ export default function App() {
         </div>
 
         {/* Panel dolny */}
-        <div className={`mt-auto ${isAnswered ? 'pb-28 md:pb-0' : ''}`}>
+        <div className={`mt-auto ${isAnswered ? 'pb-28 md:pb-0' : ''}`} data-feedback>
 
           {showFeedback && (
             <div className={`p-5 rounded-3xl font-bold flex flex-col sm:flex-row items-center gap-4 mb-4 shadow-sm border ${
@@ -941,9 +952,11 @@ export default function App() {
               
               {isOliwkaMode ? (
                 <>
-                  <CuteKitten mood={isCorrect ? 'happy' : 'sad'} />
+                  <div className="order-first sm:order-none">
+                    <CuteKitten mood={isCorrect ? 'happy' : 'sad'} />
+                  </div>
                   <div className="text-center sm:text-left flex-1">
-                    <span className="text-lg block">
+                    <span className="text-sm sm:text-base block">
                       {isCorrect 
                         ? correctOliwkaMessages[randomFeedbackIndex] 
                         : incorrectOliwkaMessages[randomFeedbackIndex]}
