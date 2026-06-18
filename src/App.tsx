@@ -157,7 +157,7 @@ const questionsDatabase: Question[] = [
   },
   {
     id: 'pr2-2', category: 'PRINCE2 cz. 2',
-    text: 'Który produkt stanowi „kontrakt” pomiędzy Kierownikiem Projektu a Komitetem Sterującym dotyczący projektu?',
+    text: 'Który produkt stanowi „kontrakt" pomiędzy Kierownikiem Projektu a Komitetem Sterującym dotyczący projektu?',
     options: ['Opis Produktu Projektu', 'Dokumentacja Inicjowania Projektu', 'Plan Projektu', 'Założenia Projektu'],
     correctAnswer: 'Dokumentacja Inicjowania Projektu'
   },
@@ -271,7 +271,7 @@ const questionsDatabase: Question[] = [
   },
   {
     id: 'pr2-21', category: 'PRINCE2 cz. 2',
-    text: 'Którą korzyść daje zasada „zarządzania z wykorzystaniem tolerancji”?',
+    text: 'Którą korzyść daje zasada „zarządzania z wykorzystaniem tolerancji"?',
     options: ['Zapewnia wspólny język', 'Daje jasność co projekt dostarczy', 'Efektywne i ekonomiczne wykorzystanie czasu kadry kierowniczej', 'Promuje spójność prac w projekcie oraz mobilność personelu'],
     correctAnswer: 'Efektywne i ekonomiczne wykorzystanie czasu kadry kierowniczej'
   },
@@ -447,15 +447,12 @@ export default function App() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [shuffledOptions, setShuffledOptions] = useState<string[]>([]);
   
-  // Zapis odpowiedzi
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [isAnswered, setIsAnswered] = useState(false);
 
-  // NOWE: Tryb Oliwki
   const [isOliwkaMode, setIsOliwkaMode] = useState<boolean>(false);
   const [randomFeedbackIndex, setRandomFeedbackIndex] = useState(0);
 
-  // Dynamiczne ładowanie Tailwind CSS i fontu Inter na potrzeby podglądu Canvas
   useEffect(() => {
     const tailwindScript = document.createElement('script');
     tailwindScript.src = 'https://cdn.tailwindcss.com';
@@ -484,7 +481,6 @@ export default function App() {
     };
   }, []);
 
-  // Wczytywanie postępu z Local Storage (w tym trybu Oliwki)
   useEffect(() => {
     const saved = localStorage.getItem('eduquiz_progress_v2');
     if (saved) {
@@ -509,7 +505,6 @@ export default function App() {
     }
   }, []);
 
-  // Zapisywanie postępu do Local Storage
   useEffect(() => {
     localStorage.setItem('eduquiz_progress_v2', JSON.stringify({
       appState, category, mode, activeQuestions, currentQuestionIndex, shuffledOptions, answers, isAnswered, isOliwkaMode
@@ -535,7 +530,6 @@ export default function App() {
     if (isAnswered) return;
     setAnswers(prev => ({ ...prev, [currentQuestionIndex]: option }));
     setIsAnswered(true);
-    // Losowanie losowego indeksu dla komunikatu pochwalnego/motywującego
     setRandomFeedbackIndex(Math.floor(Math.random() * 6));
   };
 
@@ -577,10 +571,7 @@ export default function App() {
     return { text: 'Niedostateczny', color: 'text-rose-600' };
   };
 
-  // Style w zależności od trybu
   const bgClass = isOliwkaMode ? 'bg-rose-50' : 'bg-slate-50';
-
-  
   const headerBgClass = isOliwkaMode ? 'bg-gradient-to-r from-rose-400 via-pink-400 to-rose-300' : 'bg-indigo-600';
 
   // --- EKRAN GŁÓWNY ---
@@ -589,7 +580,6 @@ export default function App() {
       <div className={`min-h-screen ${bgClass} flex items-center justify-center p-4 sm:p-6 transition-all duration-300 font-sans`}>
         <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden relative">
           
-          {/* Zakładki u góry do przełączania trybu Oliwki */}
           <div className="flex border-b border-slate-100 bg-slate-50">
             <button 
               onClick={() => setIsOliwkaMode(false)}
@@ -641,10 +631,10 @@ export default function App() {
             <div className="mb-6">
               <label className="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">Kategoria Pytań</label>
               <div className="grid grid-cols-2 gap-2">
-                {['Wszystkie', 'PRINCE2', 'PRINCE2 cz. 2', 'PMI'].map(cat => (
+                {(['Wszystkie', 'PRINCE2', 'PRINCE2 cz. 2', 'PMI'] as const).map(cat => (
                   <button
                     key={cat}
-                    onClick={() => setCategory(cat as Category)}
+                    onClick={() => setCategory(cat)}
                     className={`py-3 px-1 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
                       category === cat 
                         ? isOliwkaMode 
@@ -831,7 +821,6 @@ export default function App() {
   const currentAnswer = answers[currentQuestionIndex];
   const isCorrect = currentAnswer === currentQ.correctAnswer;
   
-  // Informacja zwrotna widoczna tylko w trybie 'nauka' po zaznaczeniu odpowiedzi
   const showFeedback = mode === 'nauka' && isAnswered;
 
   return (
@@ -858,7 +847,7 @@ export default function App() {
           </button>
         </div>
         
-        {/* Pasek postępu pod nagłówkiem */}
+        {/* Pasek postępu */}
         <div className="max-w-3xl mx-auto mt-4 w-full bg-slate-100 rounded-full h-2 overflow-hidden">
           <div 
             className={`h-full transition-all duration-500 ease-out ${isOliwkaMode ? 'bg-pink-400' : 'bg-indigo-600'}`} 
@@ -877,13 +866,10 @@ export default function App() {
 
           <div className="space-y-3">
             {shuffledOptions.map((option, idx) => {
-              
-              // Dynamiczne style przycisków w zależności od trybu i stanu
               let btnClass = "w-full text-left p-5 rounded-2xl border-2 transition-all font-medium flex items-center justify-between group ";
               
               if (isAnswered) {
                 if (showFeedback) {
-                  // TRYB NAUKA: Pokazujemy poprawne/błędne
                   if (option === currentQ.correctAnswer) {
                     btnClass += isOliwkaMode 
                       ? "bg-rose-50/50 border-pink-400 text-pink-700 shadow-sm"
@@ -894,7 +880,6 @@ export default function App() {
                     btnClass += "bg-white border-slate-100 text-slate-400 opacity-50 cursor-not-allowed";
                   }
                 } else {
-                  // TRYB EGZAMIN: Pokazujemy tylko co zostało wybrane
                   if (option === currentAnswer) {
                     btnClass += isOliwkaMode 
                       ? "bg-pink-50 border-pink-400 text-pink-700 shadow-sm"
@@ -904,13 +889,11 @@ export default function App() {
                   }
                 }
               } else {
-                // Przed odpowiedzią (oba tryby)
                 btnClass += isOliwkaMode
                   ? "bg-white border-slate-200 text-slate-700 hover:border-pink-300 hover:bg-rose-50/30 cursor-pointer"
                   : "bg-white border-slate-200 text-slate-700 hover:border-indigo-400 hover:bg-indigo-50 cursor-pointer";
               }
 
-              // Litery dla odpowiedzi (A, B, C, D)
               const letter = String.fromCharCode(65 + idx);
 
               return (
@@ -932,7 +915,6 @@ export default function App() {
                     <span className="text-sm sm:text-base">{option}</span>
                   </div>
                   
-                  {/* Ikony statusu (tylko w trybie nauki) */}
                   {showFeedback && option === currentQ.correctAnswer && (
                     isOliwkaMode 
                       ? <Heart className="w-6 h-6 text-pink-500 fill-pink-500 shrink-0" />
@@ -945,12 +927,15 @@ export default function App() {
           </div>
         </div>
 
-        {/* Panel dolny: Komunikaty, Kotek i przycisk dalej */}
-        <div className="mt-auto">
+        {/* Panel dolny */}
+        <div className={`mt-auto ${isAnswered ? 'pb-28 md:pb-0' : ''}`}>
+
           {showFeedback && (
             <div className={`p-5 rounded-3xl font-bold flex flex-col sm:flex-row items-center gap-4 mb-4 shadow-sm border ${
               isCorrect 
-                ? isOliwkaMode ? 'bg-rose-50 border-pink-200 text-pink-800' : 'bg-emerald-50 border-emerald-200 text-emerald-800' 
+                ? isOliwkaMode 
+                  ? 'bg-rose-50 border-pink-200 text-pink-800'
+                  : 'bg-emerald-50 border-emerald-200 text-emerald-800'
                 : 'bg-rose-50 border-rose-200 text-rose-800'
             }`}>
               
@@ -959,20 +944,27 @@ export default function App() {
                   <CuteKitten mood={isCorrect ? 'happy' : 'sad'} />
                   <div className="text-center sm:text-left flex-1">
                     <span className="text-lg block">
-                      {isCorrect ? correctOliwkaMessages[randomFeedbackIndex] : incorrectOliwkaMessages[randomFeedbackIndex]}
+                      {isCorrect 
+                        ? correctOliwkaMessages[randomFeedbackIndex] 
+                        : incorrectOliwkaMessages[randomFeedbackIndex]}
                     </span>
                     {!isCorrect && (
                       <span className="text-xs text-rose-500 block mt-1">
-                        Poprawna to: <strong className="font-semibold">{currentQ.correctAnswer}</strong> 🌸
+                        Poprawna to: <strong>{currentQ.correctAnswer}</strong> 🌸
                       </span>
                     )}
                   </div>
                 </>
               ) : (
                 <>
-                  {isCorrect ? <CheckCircle2 className="w-8 h-8 text-emerald-500 shrink-0" /> : <AlertCircle className="w-8 h-8 text-rose-500 shrink-0" />}
+                  {isCorrect 
+                    ? <CheckCircle2 className="w-8 h-8 text-emerald-500 shrink-0" /> 
+                    : <AlertCircle className="w-8 h-8 text-rose-500 shrink-0" />
+                  }
                   <span className="text-lg">
-                    {isCorrect ? 'Świetnie! Poprawna odpowiedź.' : `Błędna odpowiedź. Poprawna to: ${currentQ.correctAnswer}`}
+                    {isCorrect 
+                      ? 'Świetnie! Poprawna odpowiedź.' 
+                      : `Błędna odpowiedź. Poprawna to: ${currentQ.correctAnswer}`}
                   </span>
                 </>
               )}
@@ -980,48 +972,51 @@ export default function App() {
           )}
 
           {mode === 'egzamin' && isAnswered && (
-             <div className="p-4 rounded-2xl font-medium flex items-center justify-center gap-2 mb-4 bg-slate-100 text-slate-600 border border-slate-200">
-               {isOliwkaMode ? (
-                 <>
-                   <Heart className="w-5 h-5 text-pink-500 fill-pink-500" />
-                   Zapisałem Twoją odpowiedź, Oliwko. Lećmy dalej!
-                 </>
-               ) : (
-                 <>
-                   <CheckCircle2 className="w-5 h-5 text-indigo-500" />
-                   Odpowiedź zapisana. Przejdź dalej.
-                 </>
-               )}
-             </div>
+            <div className="p-4 rounded-2xl font-medium flex items-center justify-center gap-2 mb-4 bg-slate-100 text-slate-600 border border-slate-200">
+              {isOliwkaMode ? (
+                <>
+                  <Heart className="w-5 h-5 text-pink-500 fill-pink-500" />
+                  Zapisałem Twoją odpowiedź, Oliwko. Lećmy dalej!
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="w-5 h-5 text-indigo-500" />
+                  Odpowiedź zapisana. Przejdź dalej.
+                </>
+              )}
+            </div>
           )}
 
-          {isAnswered && (
+        </div>
+      </div>
+
+      {/* Sticky mobile button */}
+      {isAnswered && (
+        <div className="fixed bottom-0 left-0 right-0 md:static bg-white border-t border-slate-200 p-4 md:p-0 shadow-lg md:shadow-none z-20">
+          <div className="max-w-3xl mx-auto">
             <button
               onClick={nextQuestion}
               className={`w-full py-5 text-white rounded-2xl font-bold text-lg shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2 ${
                 isOliwkaMode 
-                  ? 'bg-gradient-to-r from-rose-400 to-pink-500 shadow-pink-100' 
+                  ? 'bg-gradient-to-r from-rose-400 to-pink-500 shadow-pink-100'
                   : 'bg-slate-900 hover:bg-slate-800 shadow-slate-300'
               }`}
             >
               {currentQuestionIndex < activeQuestions.length - 1 ? (
                 isOliwkaMode ? (
-                  <>Kolejne pytanko 🌸 <ArrowRight className="w-5 h-5" /></>
+                  <><ArrowRight className="w-5 h-5" /> Kolejne pytanko 🌸</>
                 ) : (
-                  <>Następne pytanie <ArrowRight className="w-5 h-5" /></>
+                  <><ArrowRight className="w-5 h-5" /> Następne pytanie</>
                 )
+              ) : isOliwkaMode ? (
+                <><Sparkles className="w-5 h-5" /> Sprawdźmy wynik, kochanie! 🏆</>
               ) : (
-                isOliwkaMode ? (
-                  <>Sprawdźmy wynik, kochanie! 🏆 <Sparkles className="w-5 h-5" /></>
-                ) : (
-                  <>Zakończ i sprawdź wynik <Trophy className="w-5 h-5" /></>
-                )
+                <><Trophy className="w-5 h-5" /> Zakończ i sprawdź wynik</>
               )}
             </button>
-          )}
+          </div>
         </div>
-
-      </div>
+      )}
     </div>
   );
 }
