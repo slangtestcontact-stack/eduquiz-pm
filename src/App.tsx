@@ -12,7 +12,6 @@ import {
   AlertCircle,
   Heart,
   Sparkles,
-  Smile
 } from 'lucide-react';
 
 type Category = 'Wszystkie' | 'PRINCE2' | 'PMI' | 'PRINCE2 cz. 2';
@@ -580,8 +579,8 @@ export default function App() {
 
   // Style w zależności od trybu
   const bgClass = isOliwkaMode ? 'bg-rose-50' : 'bg-slate-50';
-  const cardBorderClass = isOliwkaMode ? 'border-pink-200' : 'border-slate-100';
-  const accentTextClass = isOliwkaMode ? 'text-pink-600' : 'text-indigo-600';
+
+  
   const headerBgClass = isOliwkaMode ? 'bg-gradient-to-r from-rose-400 via-pink-400 to-rose-300' : 'bg-indigo-600';
 
   // --- EKRAN GŁÓWNY ---
